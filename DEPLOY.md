@@ -63,9 +63,8 @@ docker compose up -d --build
 
 ## 🟣 Hostinger Docker Manager (Compose from URL)
 
-Для панели Hostinger используй **`docker-compose.yaml`** — без `build:`, с готовым
-образом из GitHub Container Registry и Caddyfile прямо внутри compose (файлы на
-диске не нужны).
+Для панели Hostinger используй **`docker-compose.yaml`** — без `build:` и без
+Caddy. Приложение публикуется напрямую на порт `8082`.
 
 **URL в Hostinger:**
 ```
@@ -78,20 +77,22 @@ ghcr.io/molotilkaholotilka/bots-n-bones-mascot-generator:latest
 ```
 (собирается автоматически GitHub Actions при push в `master`)
 
-**Переменные окружения** — задай в настройках проекта Hostinger:
+**Переменные окружения** — задай через `.env` в проекте Hostinger:
 
 | Переменная | Пример |
 |---|---|
 | `FAL_KEY` | ключ FAL |
 | `OPENAI_API_KEY` | ключ OpenAI |
-| `DOMAIN` | `mascot.example.com` |
-| `BASIC_AUTH_USER` | `team` |
-| `BASIC_AUTH_HASH` | хэш от `caddy hash-password` |
+| `FAL_MODEL` | `fal-ai/nano-banana-2/edit` |
+| `OPENAI_MODEL` | `gpt-5-mini` |
 
-Хэш пароля (на VPS через Terminal):
-```bash
-docker run --rm caddy:2 caddy hash-password --plaintext 'ПАРОЛЬ_КОМАНДЫ'
+После деплоя открывай:
 ```
+http://IP_ВАШЕГО_VPS:8082
+```
+
+Без Caddy не будет HTTPS и Basic Auth. Для внутреннего теста это ок, но для
+публичного доступа лучше вернуть reverse-proxy/авторизацию позже.
 
 > После первой сборки образа зайди в GitHub → Packages →
 > `bots-n-bones-mascot-generator` → **Change visibility → Public**,

@@ -2,53 +2,20 @@
 # URL: https://github.com/MolotilkaHolotilka/bots-n-bones-mascot-generator
 #
 # Set env vars in Hostinger project settings (or .env on the server):
-#   FAL_KEY, OPENAI_API_KEY, DOMAIN, BASIC_AUTH_USER, BASIC_AUTH_HASH
+#   FAL_KEY, OPENAI_API_KEY
+#
+# Open after deploy:
+#   http://<VPS_IP>:8082
 
 services:
   app:
     image: ghcr.io/molotilkaholotilka/bots-n-bones-mascot-generator:latest
-    environment:
-      FAL_KEY: ${FAL_KEY}
-      FAL_MODEL: ${FAL_MODEL:-fal-ai/nano-banana-2/edit}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5-mini}
-      PORT: "8082"
-    expose:
-      - "8082"
+    env_file: .env
+    ports:
+      - "8082:8082"
     volumes:
       - generated:/app/_generated
     restart: unless-stopped
 
-  caddy:
-    image: caddy:2
-    depends_on:
-      - app
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      DOMAIN: ${DOMAIN}
-      BASIC_AUTH_USER: ${BASIC_AUTH_USER}
-      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH}
-    configs:
-      - source: caddyfile
-        target: /etc/caddy/Caddyfile
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-    restart: unless-stopped
-
-configs:
-  caddyfile:
-    content: |
-      {env.DOMAIN} {
-      	basic_auth {
-      		{env.BASIC_AUTH_USER} {env.BASIC_AUTH_HASH}
-      	}
-      	reverse_proxy app:8082
-      }
-
 volumes:
   generated:
-  caddy_data:
-  caddy_config:
