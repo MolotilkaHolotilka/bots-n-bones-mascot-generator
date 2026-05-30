@@ -61,6 +61,47 @@ docker compose up -d --build
 
 ---
 
+## 🟣 Hostinger Docker Manager (Compose from URL)
+
+Для панели Hostinger используй **`docker-compose.yaml`** — без `build:`, с готовым
+образом из GitHub Container Registry и Caddyfile прямо внутри compose (файлы на
+диске не нужны).
+
+**URL в Hostinger:**
+```
+https://github.com/MolotilkaHolotilka/bots-n-bones-mascot-generator
+```
+
+**Образ приложения:**
+```
+ghcr.io/molotilkaholotilka/bots-n-bones-mascot-generator:latest
+```
+(собирается автоматически GitHub Actions при push в `master`)
+
+**Переменные окружения** — задай в настройках проекта Hostinger:
+
+| Переменная | Пример |
+|---|---|
+| `FAL_KEY` | ключ FAL |
+| `OPENAI_API_KEY` | ключ OpenAI |
+| `DOMAIN` | `mascot.example.com` |
+| `BASIC_AUTH_USER` | `team` |
+| `BASIC_AUTH_HASH` | хэш от `caddy hash-password` |
+
+Хэш пароля (на VPS через Terminal):
+```bash
+docker run --rm caddy:2 caddy hash-password --plaintext 'ПАРОЛЬ_КОМАНДЫ'
+```
+
+> После первой сборки образа зайди в GitHub → Packages →
+> `bots-n-bones-mascot-generator` → **Change visibility → Public**,
+> иначе Hostinger не сможет скачать image.
+
+Для деплоя с локальной сборкой на сервере по-прежнему используй `compose.yaml`
+(`docker compose up -d --build`).
+
+---
+
 ## Что нужно от сервера
 
 - Linux VPS (Ubuntu 22.04+), Node 18+ (лучше 20/22).
