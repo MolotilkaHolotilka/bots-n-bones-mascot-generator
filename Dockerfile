@@ -14,11 +14,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Pre-download headless Chromium for Remotion (avoids delay on first video render).
-RUN npx remotion browser ensure
-
 # App source.
 COPY . .
+
+# Pre-download headless Chromium for Remotion (avoids delay on first video render).
+RUN node --input-type=module -e "import { ensureBrowser } from '@remotion/renderer'; await ensureBrowser();"
 
 ENV PORT=8082
 EXPOSE 8082
