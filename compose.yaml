@@ -1,0 +1,35 @@
+# One-command deploy: app (Node + Remotion) behind Caddy (HTTPS + Basic Auth).
+# The app is NOT published to the host — only Caddy is reachable from outside.
+
+services:
+  app:
+    build: .
+    env_file: .env
+    expose:
+      - "8082"
+    volumes:
+      # Persist generated images/videos across rebuilds.
+      - ./_generated:/app/_generated
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    depends_on:
+      - app
+    environment:
+      # Only auth/domain vars — API keys stay in the app container.
+      DOMAIN: ${DOMAIN}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER}
+      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
